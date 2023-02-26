@@ -21,6 +21,10 @@ def init_params():
 #   定义L2范数
 def l2_penalty(w):
     return torch.sum(w.pow(2)) / 2
+
+#   定义L1范数
+def l1_penalty(w):
+    return torch.sum(torch.abs(w))
   
 #   定义训练代码实现
 def train(lambd):
