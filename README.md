@@ -10,3 +10,8 @@
 
 
 ## ch4——多层感知机
+#### [4.1 mlp多层感知机](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/01_mlp.py)
+#### [4.2 多层感知机的从零开始实现](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/02_mlp-scratch.py)
+#### [4.3 多层感知机的简洁实现](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/03_mlp-concise.py)
+#### [4.4 欠拟合、过拟合](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/04_underfit-overfit.py)
+#### [4.5 权重衰减](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/05_weight-decay.py)
