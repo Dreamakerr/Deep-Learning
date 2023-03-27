@@ -15,3 +15,4 @@
 #### [4.3 多层感知机的简洁实现](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/03_mlp-concise.py)
 #### [4.4 欠拟合、过拟合](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/04_underfit-overfit.py)
 #### [4.5 权重衰减](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/05_weight-decay.py)
+#### [4.6 衰退法](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/06_dropout.py)
