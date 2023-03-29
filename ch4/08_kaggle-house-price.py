@@ -1,93 +1,154 @@
-# 下载和缓存数据集
-
-import hashlib
-import os
-import tarfile
-import zipfile
-import requests
-
-
-# 字典DATA_HUB， 它可以将数据集名称的字符串映射到数据集相关的二元组上， 这个二元组包含数据集的url和验证文件完整性的sha-1密钥。
-#@save
-DATA_HUB = dict()
-DATA_URL = 'http://d2l-data.s3-accelerate.amazonaws.com/'
-
-# download函数下载数据集，缓存在本地目录中，并返回下载文件的名称。
-# 如果缓存目录中已经存在此数据集文件，并且其sha-1与存储在DATA_HUB中的相匹配， 我们将使用缓存的文件，以避免重复的下载。
-def download(name, cache_dir=os.path.join('..', 'data')):  #@save
-    """下载一个DATA_HUB中的文件，返回本地文件名"""
-    assert name in DATA_HUB, f"{name} 不存在于 {DATA_HUB}"
-    url, sha1_hash = DATA_HUB[name]
-    os.makedirs(cache_dir, exist_ok=True)
-    fname = os.path.join(cache_dir, url.split('/')[-1])
-    if os.path.exists(fname):
-        sha1 = hashlib.sha1()
-        with open(fname, 'rb') as f:
-            while True:
-                data = f.read(1048576)
-                if not data:
-                    break
-                sha1.update(data)
-        if sha1.hexdigest() == sha1_hash:
-            return fname  # 命中缓存
-    print(f'正在从{url}下载{fname}...')
-    r = requests.get(url, stream=True, verify=True)
-    with open(fname, 'wb') as f:
-        f.write(r.content)
-    return fname
-  
-  
-# 实现两个实用函数，一个将下载并解压缩zip或tar文件，另一个将书中所有数据集从DATA_HUB下载到缓存目录中。
-def download_extract(name, folder=None):  #@save
-    """下载并解压zip/tar文件"""
-    fname = download(name)
-    base_dir = os.path.dirname(fname)   # 目录名
-    data_dir, ext = os.path.splitext(fname)   # 分离文件名与扩展名
-    if ext == '.zip':   # 扩展名为zip，则调用ZipFile读取
-        fp = zipfile.ZipFile(fname, 'r')
-    elif ext in ('.tar', '.gz'):  # 扩展名为tar或gz，则调用tarfile读取
-        fp = tarfile.open(fname, 'r')
-    else:
-        assert False, '只有zip/tar文件可以被解压缩'
-    fp.extractall(base_dir)   # 解压
-    return os.path.join(base_dir, folder) if folder else data_dir
-
-def download_all():  #@save
-    """下载DATA_HUB中的所有文件"""
-    for name in DATA_HUB:
-        download(name)
-
-        
-# 访问和读取数据集
-# 如果没有安装pandas，请取消下一行的注释
-# !pip install pandas
-
-%matplotlib inline
 import numpy as np
 import pandas as pd
 import torch
-from torch import nn
 from d2l import torch as d2l
+from torch import nn
 
-# 使用脚本下载数据集
-DATA_HUB['kaggle_house_train'] = (  #@save
-    DATA_URL + 'kaggle_house_pred_train.csv',
-    '585e9cc93e70b39160e7921475f9bcd7d31219ce')
+train_file = "kaggle_house_train"
+test_file = "kaggle_house_test"
+# 1.读取数据
+train_data = pd.read_csv(d2l.download(train_file))
+test_data = pd.read_csv(d2l.download(test_file))
+# print(test_data.shape)
+# print(test_data.shape)
+# print(train_data.iloc[0:4, [0, 1, 2, 3, -3, -2, -1]])
 
-DATA_HUB['kaggle_house_test'] = (  #@save
-    DATA_URL + 'kaggle_house_pred_test.csv',
-    'fa19780a7b011d9b009e8bff8e99922a8ee2eb90')
+# 2.将训练集和测试集的数据进行拼接
+all_features = pd.concat((train_data.iloc[:, 1:-1], test_data.iloc[:, 1:]))
+# print(all_features.shape)
+# print(all_features.head())
 
-# 使用pandas加载包含训练数据和测试数据的两个csv文件
-train_data = pd.read_csv(download('kaggle_house_train'))
-test_data = pd.read_csv(download('kaggle_house_test'))
+# 3.处理数据，对数据进行归一化，对缺失值赋予均值，将离散数据转化为one-hot编码
+numeric_features = all_features.dtypes[all_features.dtypes != 'object'].index
+# print(numeric_features)
+all_features[numeric_features] = all_features[numeric_features].apply(
+    lambda x: (x - x.mean()) / (x.std())
+)
+all_features[numeric_features] = all_features[numeric_features].fillna(0)
+all_features = pd.get_dummies(all_features, dummy_na=True)  # “Dummy_na=True”将“na”（缺失值）视为有效的特征值，并为其创建指示符特征
+# print(all_features.shape)
+
+# 4.首先把数据转换成pytorch格式，然后再编写其他方法
+n_train = train_data.shape[0]
+train_features = torch.tensor(
+    all_features[:n_train].values, dtype=torch.float32
+)
+test_features = torch.tensor(
+    all_features[n_train:].values, dtype=torch.float32
+)
+train_labels = torch.tensor(
+    train_data.SalePrice.values.reshape(-1, 1), dtype=torch.float32
+)
+
+# 均方误差损失函数
+loss = nn.MSELoss()
+in_features = train_features.shape[1]
+ 
+def net_1():
+    net = nn.Sequential(nn.Linear(in_features,1))
+    return net    
+ 
+def net_2():
+    net = nn.Sequential(nn.Linear(in_features,128), 
+                        nn.ReLU(), 
+                        nn.Linear(128, 64), 
+                        nn.ReLU(),
+                        nn.Linear(64, 1))
+    return net
 
 
-# 查看样本数量，训练数据集包括1460个样本，每个样本80个特征和1个标签， 而测试数据集包含1459个样本，每个样本80个特征。
-print(train_data.shape)
-print(test_data.shape)
+# 定义相对误差
+def log_rmse(net, features, labels):
+    # 稳定数据，将小于1的数据设置为1
+    clipped_preds = torch.clamp(net(features), 1, float('inf'))
+    rmse = torch.sqrt(loss(torch.log(clipped_preds), torch.log(labels)))
+    return rmse.item()
 
-print(train_data.iloc[0:4, [0,1,2,3,-3,-2,-1]])
-  
-  
-  
+
+def train(net, train_features, train_labels, test_features, test_labels,
+          num_epochs, learning_rate, weight_decay, batch_size):
+    train_ls, test_ls = [], []
+    train_iter = d2l.load_array((train_features, train_labels), batch_size)
+    # 这里使用的是Adam优化算法
+    optimizer = torch.optim.Adam(net.parameters(),
+                                 lr = learning_rate,
+                                 weight_decay = weight_decay)
+    for epoch in range(num_epochs):
+        for X, y in train_iter:
+            optimizer.zero_grad()
+            l = loss(net(X), y)
+            l.backward()
+            optimizer.step()
+        train_ls.append(log_rmse(net, train_features, train_labels))
+        if test_labels is not None:
+            test_ls.append(log_rmse(net, test_features, test_labels))
+    return train_ls, test_ls
+
+
+def get_k_fold_data(k, i, X, y):
+    assert k > 1
+    fold_size = X.shape[0] // k
+    X_train, y_train = None, None
+    for j in range(k):
+        idx = slice(j * fold_size, (j + 1) * fold_size)
+        X_part, y_part = X[idx, :], y[idx]
+        if j == i:
+            X_valid, y_valid = X_part, y_part
+        elif X_train is None:
+            X_train, y_train = X_part, y_part
+        else:
+            X_train = torch.cat([X_train, X_part], 0)
+            y_train = torch.cat([y_train, y_part], 0)
+    return X_train, y_train, X_valid, y_valid
+
+
+def k_fold(k, X_train, y_train, num_epochs, learning_rate, weight_decay,
+           batch_size, Net):
+    train_l_sum, valid_l_sum = 0, 0
+    for i in range(k):
+        data = get_k_fold_data(k, i, X_train, y_train)
+        net = Net()
+        train_ls, valid_ls = train(net, *data, num_epochs, learning_rate,
+                                   weight_decay, batch_size)
+        train_l_sum += train_ls[-1]
+        valid_l_sum += valid_ls[-1]
+        if i == 0:
+            d2l.plot(list(range(1, num_epochs + 1)), [train_ls, valid_ls],
+                     xlabel='epoch', ylabel='rmse', xlim=[1, num_epochs],
+                     legend=['train', 'valid'], yscale='log')
+        print(f'折{i + 1}，训练log rmse{float(train_ls[-1]):f}, '
+              f'验证log rmse{float(valid_ls[-1]):f}')
+    return train_l_sum / k, valid_l_sum / k
+
+
+# 模型选择，定义参数
+# k, num_epochs, lr, weight_decay, batch_size = 5, 1000, 5, 0, 64
+# train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr,
+#                           weight_decay, batch_size)
+# print(f'{k}-折验证: 平均训练log rmse: {float(train_l):f}, '
+#       f'平均验证log rmse: {float(valid_l):f}')
+
+k, num_epochs, lr, weight_decay, batch_size = 12, 300, 0.001, 0.001, 128
+train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr,
+                          weight_decay, batch_size, net_2)
+print(f'{k}-折验证: 平均训练log rmse: {float(train_l):f}, '
+      f'平均验证log rmse: {float(valid_l):f}')
+
+def train_and_pred(train_features, test_features, train_labels, test_data,
+                   num_epochs, lr, weight_decay, batch_size):
+    net = get_net()
+    train_ls, _ = train(net, train_features, train_labels, None, None,
+                        num_epochs, lr, weight_decay, batch_size)
+    d2l.plot(np.arange(1, num_epochs + 1), [train_ls], xlabel='epoch',
+             ylabel='log rmse', xlim=[1, num_epochs], yscale='log')
+    print(f'训练log rmse：{float(train_ls[-1]):f}')
+    # 将网络应用于测试集。
+    preds = net(test_features).detach().numpy()
+    # 将其重新格式化以导出到Kaggle
+    test_data['SalePrice'] = pd.Series(preds.reshape(1, -1)[0])
+    submission = pd.concat([test_data['Id'], test_data['SalePrice']], axis=1)
+    submission.to_csv('submission.csv', index=False)
+
+train_and_pred(train_features, test_features, train_labels, test_data,
+               num_epochs, lr, weight_decay, batch_size)
+d2l.plt.show()
