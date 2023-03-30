@@ -16,3 +16,5 @@
 #### [4.4 欠拟合、过拟合](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/04_underfit-overfit.py)
 #### [4.5 权重衰减](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/05_weight-decay.py)
 #### [4.6 衰退法](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/06_dropout.py)
+#### [4.7 数据稳定性和模型初始化](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/07_numerical-stability-and-init.py)
+#### [4.8 kaggle房价预测](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/08_kaggle-house-price.py)
