@@ -49,3 +49,17 @@ clone.eval()
 # 验证模型参数
 Y_clone = clone(X)
 Y_clone == Y
+
+
+# 如何保存和加载模型的某层参数
+torch.save(net.hidden.state_dict(), 'mlp.hidden.params')
+clone = MLP()
+clone.hidden.load_state_dict(torch.load('mlp.hidden.params'))
+print(clone.hidden.weight == net.hidden.weight)
+
+
+# 同时保存网络架构和参数
+model = nn.Sequential(nn.Linear(20, 256), nn.ReLU(), nn.Linear(256, 10))
+torch.save(model, 'model.pt')
+m = torch.load('model.pt')
+print(m)
