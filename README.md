@@ -18,3 +18,11 @@
 #### [4.6 衰退法](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/06_dropout.py)
 #### [4.7 数据稳定性和模型初始化](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/07_numerical-stability-and-init.py)
 #### [4.8 kaggle房价预测](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch4/08_kaggle-house-price.py)
+
+
+## ch5——深度学习计算
+#### [5.1 层和块](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.1%20model-construction.py)
+#### [5.2 参数管理](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.2%20parameters.py)
+#### [5.3 延后初始化](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.3%20deferred-init.py)
+#### [5.4 自定义层](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.4%20custom-layer.py)
+#### [5.5 读和写](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.5%20read-write.py)
