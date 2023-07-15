@@ -31,6 +31,6 @@
 ## ch6——卷积神经网络
 #### [6.1 卷积层](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch6/6.1%20conv-layer.py)
 #### [6.2 填充和步幅](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch6/6.2%20padding-and-strides.py)
-#### [6.3 ]()
+#### [6.3 多输入输出通道](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch6/6.3%20channels.py)
 #### [6.4 ]()
 #### [6.5 ]()
