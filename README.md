@@ -26,3 +26,11 @@
 #### [5.3 延后初始化](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.3%20deferred-init.py)
 #### [5.4 自定义层](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.4%20custom-layer.py)
 #### [5.5 读和写](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch5/5.5%20read-write.py)
+
+
+## ch6——卷积神经网络
+#### [6.1 从全连接层到卷积](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch6/6.1%20conv-layer.py)
+#### [6.2 ]()
+#### [6.3 ]()
+#### [6.4 ]()
+#### [6.5 ]()
