@@ -39,4 +39,6 @@
 ## ch7——现代卷积神经网络
 #### [7.1 AlexNet](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch7/7.1%20AlexNet.py)
 #### [7.2 VGG](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch7/7.2%20vgg.py)
-#### [7.3 NiN]()
+#### [7.3 NiN](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch7/7.3%20NiN.py)
+#### [7.4 GoogLeNet](https://github.com/Dreamakerr/Deep-Learning/blob/main/ch7/7.4%20GoogLeNet.py)
+
